@@ -1,8 +1,9 @@
 import enum
-
+from sanic import exceptions
 import jwt
 from datetime import datetime, timedelta
 from settings import settings
+from .models import User
 
 public_key = """
 -----BEGIN PUBLIC KEY-----
@@ -70,3 +71,25 @@ class JWT:
             return jwt.decode(jwt=token, key=public_key, algorithms=[settings.jwt_algo], audience=aud)
         except jwt.PyJWTError as ex:
             raise ex
+
+
+def verify_user(function):
+    def wrapper(request, *args, **kwargs):
+        token = request.headers.get('authorization')
+        token = token.split(' ')[1]
+        if not token:
+            raise exceptions.Unauthorized('Auth token not found')
+        payload = JWT.decode(token=token, aud=Audience.login.value)
+        if 'user' not in payload:
+            raise exceptions.Unauthorized('Invalid token')
+        user = User.nodes.get_or_none(id=payload['user'])
+        if not user:
+            raise exceptions.Unauthorized('User not found')
+        request.ctx.user = user
+        # try:
+        #     request.json.update(user_id=user.id)
+        # except:
+        #     pass
+        return function(request, *args, **kwargs)
+    wrapper.__name__ = function.__name__
+    return wrapper

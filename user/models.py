@@ -17,6 +17,8 @@ class User(db.StructuredNode):
     is_superuser = db.BooleanProperty(default=False)
     is_verified = db.BooleanProperty(default=False)
     created_at = db.DateTimeFormatProperty(default_now=True, format='%Y-%m-%dT%H:%M:%SZ')
+    notes = db.RelationshipTo('note.models.Note', 'CREATED_BY')
+    collab_notes = db.RelationshipFrom('note.models.Note', 'COLLABORATED_TO')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -36,11 +38,9 @@ class User(db.StructuredNode):
     def check_password(self, password):
         return pbkdf2_sha256.verify(password, self.password)
 
-
     @property
     def to_json(self):
-        return {x: y.isoformat() if isinstance(y, datetime.datetime) else y for x, y in self.__dict__.items()
-                if x != 'password' or x != 'admin_key'}
+        return {x: y.isoformat() if isinstance(y, datetime.datetime) else y for x, y in self.__dict__.items()}
 
     def __str__(self):
         return self.username
