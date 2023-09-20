@@ -17,6 +17,7 @@ class Note(db.StructuredNode):
     user_id = db.StringProperty()
     created_by = db.RelationshipFrom('user.models.User', 'CREATED_BY')
     collaborator = db.RelationshipTo('user.models.User', 'COLLABORATED_TO', model=Collaborator)
+    labels = db.RelationshipTo('Label', 'ASSOCIATED_WITH')
 
     def __str__(self):
         return self.title
@@ -24,3 +25,15 @@ class Note(db.StructuredNode):
     @property
     def to_json(self):
         return {x: y.isoformat() if isinstance(y, datetime) else y for x, y in self.__dict__.items()}
+
+
+class Label(db.StructuredNode):
+    id = db.UniqueIdProperty()
+    title = db.StringProperty()
+    color = db.StringProperty()
+    user_id = db.StringProperty()
+    user = db.RelationshipFrom('user.models.User', 'CREATED_BY')
+    notes = db.RelationshipFrom(Note, 'ASSOCIATED_WITH')
+
+    def __str__(self):
+        return self.title

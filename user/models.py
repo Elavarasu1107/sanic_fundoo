@@ -19,6 +19,7 @@ class User(db.StructuredNode):
     created_at = db.DateTimeFormatProperty(default_now=True, format='%Y-%m-%dT%H:%M:%SZ')
     notes = db.RelationshipTo('note.models.Note', 'CREATED_BY')
     collab_notes = db.RelationshipFrom('note.models.Note', 'COLLABORATED_TO')
+    labels = db.RelationshipTo('note.models.Label', 'CREATED_BY')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

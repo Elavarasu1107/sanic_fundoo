@@ -22,7 +22,9 @@ async def register_user(request, body: schemas.UserRequest):
                'subject': 'Sanic user registration',
                'message': url}
     request.app.add_task(send_mail(payload))
-    return json({'message': 'User created', 'status': 201, 'data': user.to_json}, status=201)
+    return json({'message': 'User created', 'status': 201,
+                 'data': schemas.UserRequest.model_validate(user).model_dump(exclude={'password', 'admin_key'})},
+                status=201)
 
 
 @bp.post('/signIn')

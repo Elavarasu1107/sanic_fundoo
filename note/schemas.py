@@ -36,3 +36,19 @@ class NoteResponse(NoteValidator):
         if value:
             return value.isoformat()
         return value
+
+
+class LabelSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    title: str
+    color: str
+
+
+class LabelResponse(LabelSchema):
+    id: str
+    user_id: str
+
+
+class LabelAssociate(BaseModel):
+    note_id: str
+    labels: Optional[List[str]]
