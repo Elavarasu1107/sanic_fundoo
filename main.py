@@ -19,7 +19,7 @@ app = Sanic('fundoo')
 
 app.error_handler = ExceptionHandler()
 config.DATABASE_URL = settings.neo_uri
-app.extend(config=Config(oas_url_prefix='',
+app.extend(config=Config(oas_url_prefix='/docs',
                          oas_uri_to_swagger='/docs',
                          oas_ui_swagger_html_title='Fundoo',
                          api_title='Fundoo',
